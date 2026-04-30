@@ -24,21 +24,37 @@ app.add_middleware(
 
 class Message(BaseModel):
     content: str
+    conversation_id: str
 
 @app.get("/")
 def root():
     return {"message": "Conversa backend running"}
 
+conversations = {}
+
 @app.post("/chat")
 def chat(msg: Message):
+    if msg.conversation_id not in conversations:
+        conversations[msg.conversation_id] = []
+
+    conversations[msg.conversation_id].append({
+        "role": "user",
+        "content": msg.content
+    })
+
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": msg.content}
+            *conversations[msg.conversation_id]
         ]
     )
 
     reply = response.choices[0].message.content
+
+    conversations[msg.conversation_id].append({
+        "role": "assistant",
+        "content": reply
+    })
 
     return {"reply": reply}

@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function App() {
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
+  const [conversationId] = useState(() => crypto.randomUUID());
 
   const sendMessage = async () => {
     const res = await fetch("http://127.0.0.1:8000/chat", {
@@ -10,7 +11,10 @@ export default function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ content: input }),
+      body: JSON.stringify({
+            content: input,
+            conversation_id: conversationId
+          }),
     });
 
     const data = await res.json();
@@ -29,6 +33,9 @@ export default function App() {
       </button>
 
       <div className="mt-5 text-xl">{response}</div>
+      <div className="text-sm text-gray-500">
+         ID: {conversationId}
+      </div>
     </div>
   );
 }
