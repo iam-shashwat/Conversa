@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
+from app.db.database import SessionLocal, engine, Base
 
 from dotenv import load_dotenv
 import os

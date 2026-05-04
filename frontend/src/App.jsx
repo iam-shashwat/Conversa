@@ -27,6 +27,11 @@ export default function App() {
         className="border p-2"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            sendMessage();
+          }
+        }}
       />
       <button className="ml-2 p-2 bg-blue-500 text-white" onClick={sendMessage}>
         Send
