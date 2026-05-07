@@ -70,7 +70,7 @@ export default function SignupPage() {
       <section className="animate-frame-enter relative mx-auto flex min-h-[calc(100dvh-2rem)] w-full max-w-6xl overflow-hidden rounded-[34px] border border-black/8 bg-white/65 shadow-[0_30px_90px_rgba(34,40,36,0.12)] backdrop-blur-2xl transition-colors dark:border-white/10 dark:bg-[#111815]/80 dark:shadow-[0_32px_100px_rgba(0,0,0,0.42)]">
         <div className="grid w-full gap-0 lg:grid-cols-[0.94fr_1.06fr]">
           <section className="flex items-center border-b border-black/8 p-5 dark:border-white/10 lg:border-b-0 lg:border-r">
-            <div className="w-full rounded-[2rem] border border-black/8 bg-white/82 p-5 shadow-[0_20px_60px_rgba(25,34,29,0.08)] dark:border-white/10 dark:bg-[#101714]/92">
+            <div className="w-full rounded-4xl border border-black/8 bg-white/82 p-5 shadow-[0_20px_60px_rgba(25,34,29,0.08)] dark:border-white/10 dark:bg-[#101714]/92">
               <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <BrandLockup subtitle="Create your workspace" />
                 <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -172,7 +172,7 @@ export default function SignupPage() {
                 </span>
 
                 <div className="grid gap-3">
-                  <h2 className="m-0 max-w-[8ch] font-display text-[clamp(2.35rem,5vw,4.5rem)] leading-[0.92] tracking-[-0.05em] text-balance">
+                  <h2 className="m-0 max-w-[8ch] font-display text-[clamp(2.35rem,5vw,4.5rem)] leading-[0.92] tracking-tighter text-balance">
                     Start here. Keep everything focused.
                   </h2>
                   <p className="m-0 max-w-xl text-[0.98rem] leading-7 text-zinc-500 dark:text-stone-400">
@@ -181,7 +181,7 @@ export default function SignupPage() {
                   </p>
                 </div>
               </div>
-
+ 
               <div className="grid gap-3 sm:grid-cols-2">
                 {[
                   ["Clean entry", "A dedicated signup flow with no login clutter."],

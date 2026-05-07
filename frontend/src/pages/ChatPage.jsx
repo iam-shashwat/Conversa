@@ -150,7 +150,7 @@ export default function ChatPage() {
 
         <section className="flex min-h-0 flex-1 overflow-hidden rounded-[30px] border border-black/8 bg-stone-50/90 transition-colors dark:border-white/10 dark:bg-[#0f1512]/95">
           {!hasMessages ? (
-            <div className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-5 sm:px-5 sm:py-4">
+            <div className="flex min-h-0 w-full items-center justify-center overflow-hidden px-4 py-5 sm:px-5 sm:py-4">
               <div className="grid w-full max-w-4xl justify-items-start gap-4">
                 <div className="h-16 w-16 animate-orb-float rounded-full bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.94),transparent_35%),linear-gradient(180deg,rgba(193,220,206,1),rgba(227,237,231,1))] shadow-[0_18px_38px_rgba(23,55,44,0.08)] dark:bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.12),transparent_35%),linear-gradient(180deg,rgba(63,95,79,1),rgba(26,39,33,1))]" />
 
@@ -179,7 +179,7 @@ export default function ChatPage() {
               </div>
             </div>
           ) : (
-            <div className="flex h-full min-h-0 w-full flex-col justify-end gap-2 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_36%)] p-3 sm:p-4">
+            <div className="flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.04),transparent_36%)] p-3 sm:p-4">
               {messages.map((msg) => {
                 const isErrorMessage =
                   msg.role === "assistant" && msg.content.startsWith("Error:");
