@@ -23,8 +23,9 @@ export function AppStateProvider({ children }) {
     setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
   };
 
-  const signIn = ({ name, email }) => {
+  const signIn = ({ id, name, email }) => {
     const nextUser = {
+      id,
       name,
       email,
     };

@@ -5,7 +5,7 @@ import BrandLockup from "../components/BrandLockup.jsx";
 import PageBackdrop from "../components/PageBackdrop.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { useAppState } from "../context/AppState.jsx";
-import { STARTER_PROMPTS } from "../lib/app.js";
+import { API_URL, STARTER_PROMPTS, getErrorMessage } from "../lib/app.js";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -15,21 +15,54 @@ export default function SignupPage() {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (key) => (event) => {
     setForm((current) => ({ ...current, [key]: event.target.value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!form.name.trim() || !form.email.trim() || !form.password.trim()) return;
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const password = form.password.trim();
 
-    signIn({
-      name: form.name.trim(),
-      email: form.email.trim(),
-    });
-    navigate("/chat", { replace: true });
+    if (!name || !email || !password || isSubmitting) return;
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_URL}/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: name,
+          email,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await getErrorMessage(response));
+      }
+
+      const data = await response.json();
+      if (!data.user) {
+        throw new Error("Signup response did not include a user.");
+      }
+
+      signIn(data.user);
+      navigate("/chat", { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Signup failed.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -105,11 +138,18 @@ export default function SignupPage() {
 
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="mt-2 inline-flex items-center justify-center rounded-2xl bg-linear-to-b from-emerald-700 to-emerald-950 px-4 py-3.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(23,55,44,0.16)] dark:from-[#a2d3b7] dark:to-[#7fb797] dark:text-[#08110d]"
                 >
-                  Create account
+                  {isSubmitting ? "Creating account..." : "Create account"}
                 </button>
               </form>
+
+              {error ? (
+                <p className="mt-4 rounded-2xl border border-[#8d4b3a]/15 bg-[#f9ece8] px-4 py-3 text-sm text-[#7c4031] dark:border-white/10 dark:bg-[#341f1a] dark:text-[#ffd0c4]">
+                  {error}
+                </p>
+              ) : null}
 
               <p className="mt-5 text-center text-sm text-zinc-500 dark:text-stone-400">
                 Already have an account?{" "}

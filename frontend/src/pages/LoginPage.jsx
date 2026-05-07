@@ -5,26 +5,58 @@ import BrandLockup from "../components/BrandLockup.jsx";
 import PageBackdrop from "../components/PageBackdrop.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { useAppState } from "../context/AppState.jsx";
+import { API_URL, getErrorMessage } from "../lib/app.js";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { theme, toggleTheme, signIn } = useAppState();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (key) => (event) => {
     setForm((current) => ({ ...current, [key]: event.target.value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!form.email.trim() || !form.password.trim()) return;
+    const email = form.email.trim();
+    const password = form.password.trim();
 
-    signIn({
-      name: form.email.split("@")[0],
-      email: form.email.trim(),
-    });
-    navigate("/chat", { replace: true });
+    if (!email || !password || isSubmitting) return;
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await getErrorMessage(response));
+      }
+
+      const data = await response.json();
+      if (!data.user) {
+        throw new Error("Login response did not include a user.");
+      }
+
+      signIn(data.user);
+      navigate("/chat", { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -44,7 +76,7 @@ export default function LoginPage() {
                 </span>
 
                 <div className="grid gap-3">
-                  <h1 className="m-0 max-w-[9ch] font-display text-[clamp(2.35rem,5vw,4.6rem)] leading-[0.92] tracking-[-0.05em] text-balance">
+                  <h1 className="m-0 max-w-[9ch] font-display text-[clamp(2.35rem,5vw,4.6rem)] leading-[0.92] tracking-tighter text-balance">
                     Sign in and step back into the calm.
                   </h1>
                   <p className="m-0 max-w-xl text-[0.98rem] leading-7 text-zinc-500 dark:text-stone-400">
@@ -84,7 +116,7 @@ export default function LoginPage() {
           </section>
 
           <section className="flex items-center justify-center p-5">
-            <div className="w-full max-w-md rounded-[2rem] border border-black/8 bg-white/82 p-5 shadow-[0_20px_60px_rgba(25,34,29,0.08)] dark:border-white/10 dark:bg-[#101714]/92">
+            <div className="w-full max-w-md rounded-4xl border border-black/8 bg-white/82 p-5 shadow-[0_20px_60px_rgba(25,34,29,0.08)] dark:border-white/10 dark:bg-[#101714]/92">
               <div className="mb-5">
                 <h2 className="m-0 text-[1.55rem] font-semibold tracking-[-0.03em] text-zinc-950 dark:text-stone-100">
                   Log in to Conversa
@@ -128,11 +160,18 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="mt-2 inline-flex items-center justify-center rounded-2xl bg-linear-to-b from-emerald-700 to-emerald-950 px-4 py-3.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(23,55,44,0.16)] dark:from-[#a2d3b7] dark:to-[#7fb797] dark:text-[#08110d]"
                 >
-                  Log in
+                  {isSubmitting ? "Logging in..." : "Log in"}
                 </button>
               </form>
+
+              {error ? (
+                <p className="mt-4 rounded-2xl border border-[#8d4b3a]/15 bg-[#f9ece8] px-4 py-3 text-sm text-[#7c4031] dark:border-white/10 dark:bg-[#341f1a] dark:text-[#ffd0c4]">
+                  {error}
+                </p>
+              ) : null}
 
               <p className="mt-5 text-center text-sm text-zinc-500 dark:text-stone-400">
                 Need a new account?{" "}
